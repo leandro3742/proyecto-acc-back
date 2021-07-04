@@ -12,7 +12,7 @@ var typeorm_1 = require("typeorm");
 var utils_1 = require("./utils");
 var private_routes_1 = __importDefault(require("./private_routes"));
 var public_routes_1 = __importDefault(require("./public_routes"));
-var PORT = 3001;
+var PORT = process.env.PORT || '3001';
 var PUBLIC_URL = utils_1.url(PORT);
 var app = express_1["default"]();
 // create a database connection based on the ./ormconfig.js file
