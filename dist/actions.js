@@ -36,10 +36,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-exports.getUsers = exports.createUser = void 0;
+exports.deleteUser = exports.getUser = exports.getAllUsers = exports.createUser = void 0;
 var typeorm_1 = require("typeorm"); // getRepository"  traer una tabla de la base de datos asociada al objeto
 var Users_1 = require("./entities/Users");
 var utils_1 = require("./utils");
+//Crea un usuario
 var createUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var userRepo, user, newUser, results;
     return __generator(this, function (_a) {
@@ -50,16 +51,14 @@ var createUser = function (req, res) { return __awaiter(void 0, void 0, void 0, 
                     throw new utils_1.Exception("Please provide a first_name");
                 if (!req.body.last_name)
                     throw new utils_1.Exception("Please provide a last_name");
-                if (!req.body.email)
-                    throw new utils_1.Exception("Please provide an email");
-                if (!req.body.password)
-                    throw new utils_1.Exception("Please provide a password");
+                if (!req.body.cedula)
+                    throw new utils_1.Exception("Please provide a cedula");
                 userRepo = typeorm_1.getRepository(Users_1.Users);
-                return [4 /*yield*/, userRepo.findOne({ where: { email: req.body.email } })];
+                return [4 /*yield*/, userRepo.findOne({ where: { cedula: req.body.cedula } })];
             case 1:
                 user = _a.sent();
                 if (user)
-                    throw new utils_1.Exception("Users already exists with this email");
+                    throw new utils_1.Exception("Ya existe un usuario con esta cedula");
                 newUser = typeorm_1.getRepository(Users_1.Users).create(req.body);
                 return [4 /*yield*/, typeorm_1.getRepository(Users_1.Users).save(newUser)];
             case 2:
@@ -69,7 +68,8 @@ var createUser = function (req, res) { return __awaiter(void 0, void 0, void 0, 
     });
 }); };
 exports.createUser = createUser;
-var getUsers = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+//Trae todos los usuarios
+var getAllUsers = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var users;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -80,4 +80,42 @@ var getUsers = function (req, res) { return __awaiter(void 0, void 0, void 0, fu
         }
     });
 }); };
-exports.getUsers = getUsers;
+exports.getAllUsers = getAllUsers;
+//Trae solo un usuario
+var getUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var USUARIO;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, typeorm_1.getRepository(Users_1.Users).findOne({ where: { id: req.params.id } })];
+            case 1:
+                USUARIO = _a.sent();
+                if (!USUARIO)
+                    throw new utils_1.Exception("El usuario no existe");
+                return [4 /*yield*/, typeorm_1.getRepository(Users_1.Users)["delete"](USUARIO)];
+            case 2:
+                _a.sent();
+                return [2 /*return*/, res.json({ message: "El usuario fue eliminado con exito" })];
+        }
+    });
+}); };
+exports.getUser = getUser;
+//Elimina un usuario
+var deleteUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var usuarioRepo, USUARIO, result;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                usuarioRepo = typeorm_1.getRepository(Users_1.Users);
+                return [4 /*yield*/, usuarioRepo.findOne({ where: { id: req.params.id } })];
+            case 1:
+                USUARIO = _a.sent();
+                if (!USUARIO)
+                    throw new utils_1.Exception("El usuario no existe");
+                return [4 /*yield*/, usuarioRepo["delete"](USUARIO)];
+            case 2:
+                result = _a.sent();
+                return [2 /*return*/, res.json({ message: "Ok", result: result })];
+        }
+    });
+}); };
+exports.deleteUser = deleteUser;

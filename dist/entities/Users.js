@@ -46,11 +46,7 @@ var Users = /** @class */ (function (_super) {
     __decorate([
         typeorm_1.Column({ unique: true }),
         __metadata("design:type", String)
-    ], Users.prototype, "email");
-    __decorate([
-        typeorm_1.Column(),
-        __metadata("design:type", String)
-    ], Users.prototype, "password");
+    ], Users.prototype, "cedula");
     Users = __decorate([
         typeorm_1.Entity()
     ], Users);

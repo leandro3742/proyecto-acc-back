@@ -15,10 +15,8 @@ export class Users extends BaseEntity{
   last_name: string;
 
   @Column({unique: true})
-  email: string;
-
-  @Column()
-  password: string;
+  cedula: string;
+  
 
   // @ManyToMany(() => Planet)
   // @JoinTable()
