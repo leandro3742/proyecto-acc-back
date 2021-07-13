@@ -17,9 +17,9 @@ export class Users extends BaseEntity{
   @Column({unique: true})
   cedula: string;
   
+  @Column()
+  fechaIngreso: Date
 
-  // @ManyToMany(() => Planet)
-  // @JoinTable()
-  // planets: Planet[];
-  
+  @Column()
+  rol: string
 }

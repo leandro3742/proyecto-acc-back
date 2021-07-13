@@ -53,6 +53,10 @@ var createUser = function (req, res) { return __awaiter(void 0, void 0, void 0, 
                     throw new utils_1.Exception("Please provide a last_name");
                 if (!req.body.cedula)
                     throw new utils_1.Exception("Please provide a cedula");
+                if (!req.body.rol)
+                    throw new utils_1.Exception("Please provide a rol");
+                if (!req.body.fechaIngreso)
+                    throw new utils_1.Exception("Please provide a fechaIngreso");
                 userRepo = typeorm_1.getRepository(Users_1.Users);
                 return [4 /*yield*/, userRepo.findOne({ where: { cedula: req.body.cedula } })];
             case 1:
