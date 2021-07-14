@@ -51,6 +51,8 @@ var createUser = function (req, res) { return __awaiter(void 0, void 0, void 0, 
                     throw new utils_1.Exception("Please provide a first_name");
                 if (!req.body.last_name)
                     throw new utils_1.Exception("Please provide a last_name");
+                if (!req.body.sexo)
+                    throw new utils_1.Exception("Please provide a sexo");
                 if (!req.body.cedula)
                     throw new utils_1.Exception("Please provide a cedula");
                 if (!req.body.rol)

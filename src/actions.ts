@@ -8,6 +8,7 @@ export const createUser = async (req: Request, res:Response): Promise<Response> 
 	// important validations to avoid ambiguos errors, the client needs to understand what went wrong
 	if(!req.body.first_name) throw new Exception("Please provide a first_name")
 	if(!req.body.last_name) throw new Exception("Please provide a last_name")
+	if(!req.body.sexo) throw new Exception("Please provide a sexo")
 	if(!req.body.cedula) throw new Exception("Please provide a cedula")
 	if(!req.body.rol) throw new Exception("Please provide a rol")
 	if(!req.body.fechaIngreso) throw new Exception("Please provide a fechaIngreso")

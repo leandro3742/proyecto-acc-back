@@ -14,6 +14,9 @@ export class Users extends BaseEntity{
   @Column()
   last_name: string;
 
+  @Column()
+  sexo: string;
+
   @Column({unique: true})
   cedula: string;
   
