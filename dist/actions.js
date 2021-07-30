@@ -35,41 +35,105 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 exports.__esModule = true;
-exports.deleteUser = exports.getUser = exports.getAllUsers = exports.createUser = void 0;
+exports.forgotPassword = exports.deleteUser = exports.getUser = exports.getAllUsers = exports.createUser = exports.login = void 0;
 var typeorm_1 = require("typeorm"); // getRepository"  traer una tabla de la base de datos asociada al objeto
 var Users_1 = require("./entities/Users");
 var utils_1 = require("./utils");
+var controller_1 = require("./email/controller");
+var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+//Encripta
+var bcrypt = require('bcrypt');
+//LOGIN- DEVUELVE UN TOKEN DE AUTORIZACION AL USUARIO
+var login = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var USUARIO, token, validacionPassword;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!req.body.email)
+                    throw new utils_1.Exception("Por favor ingrese email en el body", 400);
+                if (!req.body.password)
+                    throw new utils_1.Exception("Por favor ingrese password en el body", 400);
+                return [4 /*yield*/, typeorm_1.getRepository(Users_1.Users).createQueryBuilder("user")
+                        .where("user.name = :name", { name: req.body.email })
+                        .orWhere("user.email = :email", { email: req.body.email })
+                        .getOne()];
+            case 1:
+                USUARIO = _a.sent();
+                if (!USUARIO)
+                    throw new utils_1.Exception("El email o la contraseña es inválida", 401);
+                token = '';
+                return [4 /*yield*/, bcrypt.compare(req.body.password, USUARIO.password)];
+            case 2:
+                validacionPassword = _a.sent();
+                validacionPassword ? token = jsonwebtoken_1["default"].sign({ USUARIO: USUARIO }, process.env.JWT_KEY) : token = 'Invalid password';
+                if (token === 'Invalid password')
+                    throw new utils_1.Exception("El email o la contraseña es inválida");
+                return [2 /*return*/, res.json({ message: "Ok", token: token, usuario: USUARIO })];
+        }
+    });
+}); };
+exports.login = login;
 //Crea un usuario
 var createUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var userRepo, user, newUser, results;
+    var USUARIO, userRepo, userEmail, userAdress;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 // important validations to avoid ambiguos errors, the client needs to understand what went wrong
-                if (!req.body.first_name)
-                    throw new utils_1.Exception("Please provide a first_name");
-                if (!req.body.last_name)
-                    throw new utils_1.Exception("Please provide a last_name");
-                if (!req.body.sexo)
-                    throw new utils_1.Exception("Please provide a sexo");
-                if (!req.body.cedula)
-                    throw new utils_1.Exception("Please provide a cedula");
-                if (!req.body.rol)
-                    throw new utils_1.Exception("Please provide a rol");
-                if (!req.body.fechaIngreso)
-                    throw new utils_1.Exception("Please provide a fechaIngreso");
+                if (!req.body.name)
+                    throw new utils_1.Exception("Please provide a name");
+                if (!req.body.address)
+                    throw new utils_1.Exception("Please provide a address");
+                if (!req.body.email)
+                    throw new utils_1.Exception("Please provide a email");
+                if (!req.body.password)
+                    throw new utils_1.Exception("Please provide a password");
+                USUARIO = new Users_1.Users();
+                USUARIO.name = req.body.name;
+                USUARIO.address = req.body.address;
+                USUARIO.email = req.body.email;
+                USUARIO.password = req.body.password;
                 userRepo = typeorm_1.getRepository(Users_1.Users);
-                return [4 /*yield*/, userRepo.findOne({ where: { cedula: req.body.cedula } })];
+                return [4 /*yield*/, userRepo.findOne({ where: { email: USUARIO.email } })];
             case 1:
-                user = _a.sent();
-                if (user)
-                    throw new utils_1.Exception("Ya existe un usuario con esta cedula");
-                newUser = typeorm_1.getRepository(Users_1.Users).create(req.body);
-                return [4 /*yield*/, typeorm_1.getRepository(Users_1.Users).save(newUser)];
+                userEmail = _a.sent();
+                if (userEmail)
+                    throw new utils_1.Exception("Ya existe un usuario con esta email");
+                return [4 /*yield*/, userRepo.findOne({ where: { address: USUARIO.address } })];
             case 2:
-                results = _a.sent();
-                return [2 /*return*/, res.json(results)];
+                userAdress = _a.sent();
+                if (userAdress)
+                    throw new utils_1.Exception("Ya existe un usuario con esta direccion");
+                //Encriptamos la pass y la guardamos encriptada
+                bcrypt.genSalt(10, function (err, salt) {
+                    if (err) {
+                        console.log(err);
+                    }
+                    bcrypt.hash(req.body.password, salt, function (err, hash) { return __awaiter(void 0, void 0, void 0, function () {
+                        var nuevoUsuario, results;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    if (err) {
+                                        console.log(err);
+                                    }
+                                    //GUARDAR EN BASE DE DATOS
+                                    USUARIO.password = hash;
+                                    nuevoUsuario = typeorm_1.getRepository(Users_1.Users).create(USUARIO);
+                                    return [4 /*yield*/, typeorm_1.getRepository(Users_1.Users).save(nuevoUsuario)];
+                                case 1:
+                                    results = _a.sent();
+                                    controller_1.enviarMail(USUARIO.email, "Verify account", "");
+                                    return [2 /*return*/];
+                            }
+                        });
+                    }); });
+                });
+                return [2 /*return*/, res.json({ message: "ok" })];
         }
     });
 }); };
@@ -97,10 +161,7 @@ var getUser = function (req, res) { return __awaiter(void 0, void 0, void 0, fun
                 USUARIO = _a.sent();
                 if (!USUARIO)
                     throw new utils_1.Exception("El usuario no existe");
-                return [4 /*yield*/, typeorm_1.getRepository(Users_1.Users)["delete"](USUARIO)];
-            case 2:
-                _a.sent();
-                return [2 /*return*/, res.json({ message: "El usuario fue eliminado con exito" })];
+                return [2 /*return*/, res.json(USUARIO)];
         }
     });
 }); };
@@ -125,3 +186,51 @@ var deleteUser = function (req, res) { return __awaiter(void 0, void 0, void 0, 
     });
 }); };
 exports.deleteUser = deleteUser;
+//ENVÍA EMAIL CON UNA NUEVA CONTRASEÑA RANDOM
+var forgotPassword = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var USUARIO, random;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!req.body.email)
+                    throw new utils_1.Exception('Por favor ingrese un email');
+                return [4 /*yield*/, typeorm_1.getRepository(Users_1.Users).findOne({ where: { email: req.body.email } })];
+            case 1:
+                USUARIO = _a.sent();
+                if (!USUARIO)
+                    throw new utils_1.Exception("Este usuario no existe");
+                random = Math.random().toString(36).substring(17);
+                console.log(random);
+                bcrypt.genSalt(10, function (err, salt) {
+                    if (err) {
+                        console.log(err);
+                    }
+                    bcrypt.hash(random, salt, function (err, hash) { return __awaiter(void 0, void 0, void 0, function () {
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    if (err) {
+                                        console.log(err);
+                                    }
+                                    //GUARDAR EN BASE DE DATOS
+                                    USUARIO.password = hash;
+                                    return [4 /*yield*/, typeorm_1.getRepository(Users_1.Users).save(USUARIO)];
+                                case 1:
+                                    _a.sent();
+                                    return [2 /*return*/];
+                            }
+                        });
+                    }); });
+                });
+                controller_1.enviarMail(USUARIO.email, 'Forgot password', random);
+                // enviarMail(USUARIO.email, USUARIO.nombre, 'Recuperar contraseña', random, USUARIO.id);
+                return [2 /*return*/, res.json({ message: "ok", usuario: USUARIO })];
+        }
+    });
+}); };
+exports.forgotPassword = forgotPassword;
+// export const sendEmail = async (req: Request, res: Response): Promise<Response> => {
+//     if(!req.body.email) throw new Exception("Ingrese un email")
+//     enviarMail(req.body.email);
+//     return res.json({messge: "ok"})
+// }

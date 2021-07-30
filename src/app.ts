@@ -11,7 +11,7 @@ import publicRoutes from './public_routes'
 var PORT = process.env.PORT || '3001';
 const PUBLIC_URL = url(PORT)
 const app = express();
-
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 // create a database connection based on the ./ormconfig.js file
 const connectionPromess = createConnection();
 

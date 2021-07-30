@@ -1,6 +1,6 @@
 import {
-  Entity, Column, PrimaryGeneratedColumn, ManyToMany, 
-  BaseEntity, JoinTable
+  Entity, Column, PrimaryGeneratedColumn, 
+  BaseEntity
 } from 'typeorm';
 
 @Entity()
@@ -8,21 +8,15 @@ export class Users extends BaseEntity{
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  first_name: string;
+  @Column({unique: true})
+  name: string;
 
   @Column()
-  last_name: string;
+  password: string;
 
   @Column()
-  sexo: string;
+  address: string
 
   @Column({unique: true})
-  cedula: string;
-  
-  @Column()
-  fechaIngreso: Date
-
-  @Column()
-  rol: string
+  email: string;
 }

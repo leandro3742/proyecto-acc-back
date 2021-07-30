@@ -15,6 +15,7 @@ var public_routes_1 = __importDefault(require("./public_routes"));
 var PORT = process.env.PORT || '3001';
 var PUBLIC_URL = utils_1.url(PORT);
 var app = express_1["default"]();
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 // create a database connection based on the ./ormconfig.js file
 var connectionPromess = typeorm_1.createConnection();
 /*

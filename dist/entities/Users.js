@@ -36,29 +36,21 @@ var Users = /** @class */ (function (_super) {
         __metadata("design:type", Number)
     ], Users.prototype, "id");
     __decorate([
-        typeorm_1.Column(),
+        typeorm_1.Column({ unique: true }),
         __metadata("design:type", String)
-    ], Users.prototype, "first_name");
+    ], Users.prototype, "name");
     __decorate([
         typeorm_1.Column(),
         __metadata("design:type", String)
-    ], Users.prototype, "last_name");
+    ], Users.prototype, "password");
     __decorate([
         typeorm_1.Column(),
         __metadata("design:type", String)
-    ], Users.prototype, "sexo");
+    ], Users.prototype, "address");
     __decorate([
         typeorm_1.Column({ unique: true }),
         __metadata("design:type", String)
-    ], Users.prototype, "cedula");
-    __decorate([
-        typeorm_1.Column(),
-        __metadata("design:type", Date)
-    ], Users.prototype, "fechaIngreso");
-    __decorate([
-        typeorm_1.Column(),
-        __metadata("design:type", String)
-    ], Users.prototype, "rol");
+    ], Users.prototype, "email");
     Users = __decorate([
         typeorm_1.Entity()
     ], Users);
