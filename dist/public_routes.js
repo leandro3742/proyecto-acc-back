@@ -13,7 +13,7 @@ var actions_1 = require("./actions");
 var router = express_1.Router();
 // signup route, creates a new user in the DB
 router.post('/login', utils_1.safe(actions_1.login));
-router.get('/user', utils_1.safe(actions_1.getAllUsers));
+// router.get('/user', safe(getAllUsers));
 router.get('/user/:id', utils_1.safe(actions_1.getUser));
 router.post('/user', utils_1.safe(actions_1.createUser));
 router.post('/forgotPassword', utils_1.safe(actions_1.forgotPassword));

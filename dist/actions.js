@@ -69,7 +69,10 @@ var login = function (req, res) { return __awaiter(void 0, void 0, void 0, funct
                 return [4 /*yield*/, bcrypt.compare(req.body.password, USUARIO.password)];
             case 2:
                 validacionPassword = _a.sent();
-                validacionPassword ? token = jsonwebtoken_1["default"].sign({ USUARIO: USUARIO }, process.env.JWT_KEY) : token = 'Invalid password';
+                validacionPassword ? token = jsonwebtoken_1["default"].sign({
+                    // exp: Math.floor(Date.now()/1000) + (60*60), //El token expira en una hora
+                    data: { USUARIO: USUARIO }
+                }, process.env.JWT_KEY, { expiresIn: 60 }) : token = 'Invalid password';
                 if (token === 'Invalid password')
                     throw new utils_1.Exception("El email o la contraseña es inválida");
                 return [2 /*return*/, res.json({ message: "Ok", token: token, usuario: USUARIO })];
@@ -79,7 +82,7 @@ var login = function (req, res) { return __awaiter(void 0, void 0, void 0, funct
 exports.login = login;
 //Crea un usuario
 var createUser = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var USUARIO, userRepo, userEmail, userAdress;
+    var USUARIO, userRepo, userEmail, userName;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -103,11 +106,11 @@ var createUser = function (req, res) { return __awaiter(void 0, void 0, void 0, 
                 userEmail = _a.sent();
                 if (userEmail)
                     throw new utils_1.Exception("Ya existe un usuario con esta email");
-                return [4 /*yield*/, userRepo.findOne({ where: { address: USUARIO.address } })];
+                return [4 /*yield*/, userRepo.findOne({ where: { name: USUARIO.name } })];
             case 2:
-                userAdress = _a.sent();
-                if (userAdress)
-                    throw new utils_1.Exception("Ya existe un usuario con esta direccion");
+                userName = _a.sent();
+                if (userName)
+                    throw new utils_1.Exception("Ya existe un usuario con este nombre");
                 //Encriptamos la pass y la guardamos encriptada
                 bcrypt.genSalt(10, function (err, salt) {
                     if (err) {

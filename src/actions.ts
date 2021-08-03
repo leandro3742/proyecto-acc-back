@@ -26,7 +26,10 @@ export const login = async (req: Request, res: Response): Promise<Response> => {
 
     let token = '';
     const validacionPassword = await bcrypt.compare(req.body.password, USUARIO.password)
-    validacionPassword ? token = jwt.sign({ USUARIO }, process.env.JWT_KEY as string) : token = 'Invalid password'
+    validacionPassword ? token = jwt.sign({
+        // exp: Math.floor(Date.now()/1000) + (60*60), //El token expira en una hora
+        data: {USUARIO} 
+    }, process.env.JWT_KEY as string, {expiresIn: 60}) : token = 'Invalid password' 
     if (token === 'Invalid password') throw new Exception("El email o la contraseña es inválida");
 
     return res.json({ message: "Ok", token, usuario: USUARIO });
@@ -55,8 +58,8 @@ export const createUser = async (req: Request, res:Response): Promise<Response> 
 	if(userEmail) throw new Exception("Ya existe un usuario con esta email")
 
 	//Busco que no exista un usuario con esta direccion
-	const userAdress = await userRepo.findOne({ where: {address: USUARIO.address }})
-	if(userAdress) throw new Exception("Ya existe un usuario con esta direccion")
+	const userName = await userRepo.findOne({ where: {name: USUARIO.name }})
+	if(userName) throw new Exception("Ya existe un usuario con este nombre")
 
 	//Encriptamos la pass y la guardamos encriptada
 	bcrypt.genSalt(10, (err: any, salt: any) => {
